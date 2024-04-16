@@ -36,20 +36,28 @@ async function printNotes() {
 }
 
 async function removeNote(id) {
-  let notes = await getNotes();
-  const updatedNotes = notes.filter((note) => note.id !== id);
+  const notes = await getNotes();
 
-  if (notes.length === updatedNotes.length) {
-    console.log(chalk.bgRed("Note not found!"));
-    return;
-  }
+  const filtered = notes.filter((note) => note.id !== id);
 
-  await saveNotes(updatedNotes);
-  console.log(chalk.bgYellow("Note removed successfully!"));
+  await saveNotes(filtered);
+  console.log(chalk.red(`Note with id="${id}" has been removed.`));
 }
 
+async function updateNote(noteData) {
+  const notes = await getNotes();
+  const index = notes.findIndex((note) => note.id === noteData.id);
+  if (index >= 0) {
+    notes[index] = { ...notes[index], ...noteData };
+    await saveNotes(notes);
+    console.log(
+      chalk.bgGreen(`Note with id="${noteData.id}" has been updated!`)
+    );
+  }
+}
 module.exports = {
   addNote,
-  printNotes,
+  getNotes,
   removeNote,
+  updateNote,
 };
